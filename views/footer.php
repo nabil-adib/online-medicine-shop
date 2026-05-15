@@ -1,0 +1,7 @@
+<footer class="site-footer">
+    <p>&copy; <?= date('Y') ?> MediShop. All rights reserved.</p>
+</footer>
+
+<script src="public/js/ajax.js"></script>
+</body>
+</html>
