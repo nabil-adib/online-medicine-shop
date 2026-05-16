@@ -26,7 +26,19 @@ required
 
 <br><br>
 
+<label>Payment Method</label>
 
+<select name="payment_method" required>
+
+<option value="">Select</option>
+
+<option value="Credit Card">Credit Card</option>
+<option value="bKash">bKash</option>
+<option value="Nagad">Nagad</option>
+<option value="Bank Transfer">Bank Transfer</option>
+<option value="Cash on Delivery">Cash on Delivery</option>
+
+</select>
 
 <br><br>
 
