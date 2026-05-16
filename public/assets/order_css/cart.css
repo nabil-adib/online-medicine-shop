@@ -1,0 +1,29 @@
+#cartTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+#cartTable th, #cartTable td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: left;
+}
+#cartTable th {
+    background: #2563eb;
+    color: white;
+}
+#cartTable tr:hover {
+    background: #eff6ff;
+}
+.qty-input {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    text-align: center;
+}
+.cart-total-container {
+    text-align: right;
+    margin-top: 25px;
+    font-size: 1.2em;
+}
