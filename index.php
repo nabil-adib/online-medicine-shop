@@ -6,26 +6,17 @@ require 'models/User.php';
 require 'models/Medicine.php';
 require 'controllers/AuthController.php';
 require 'controllers/HomeController.php';
-require 'controllers/MedicineController.php';
 require 'controllers/ProfileController.php';
 
-// Auto-login via remember_token cookie
-if (!isset($_SESSION['logged_in']) && isset($_COOKIE['remember_token'])) {
-    $token = $_COOKIE['remember_token'];
-    $user  = get_user_by_token($conn, $token);
-    if ($user) {
-        $_SESSION['logged_in']       = true;
-        $_SESSION['user_id']         = $user['id'];
-        $_SESSION['user_name']       = $user['name'];
-        $_SESSION['user_email']      = $user['email'];
-        $_SESSION['user_role']       = $user['role'];
-        $_SESSION['user_phone']      = $user['phone'];
-        $_SESSION['user_address']    = $user['address'];
-        $_SESSION['profile_picture'] = $user['profile_picture'];
-    }
-}
-
 $page = $_GET['page'] ?? 'home';
+
+// Public pages that don't require login
+$public_pages = ['login', 'register'];
+
+if (!isset($_SESSION['logged_in']) && !in_array($page, $public_pages)) {
+    header('Location: index.php?page=login');
+    exit;
+}
 
 switch ($page) {
     case 'register':
@@ -35,15 +26,14 @@ switch ($page) {
         login_ctrl($conn);
         break;
     case 'logout':
-        logout_ctrl();
+        logout_ctrl($conn);
         break;
     case 'profile':
         profile_ctrl($conn);
         break;
-    case 'browse':
-        browse_ctrl($conn);
-        break;
     case 'home':
+        home_ctrl($conn);
+        break;
     default:
         home_ctrl($conn);
         break;

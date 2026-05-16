@@ -1,106 +1,86 @@
-<?php require 'views/header.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+require 'views/header.php';
+?>
 
-<div class="container">
-    <div class="profile-wrap">
-
-        <h2>My Profile</h2>
-
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+            <p>Manage your personal information and address</p>
+        </div>
+        
         <?php if (!empty($error)): ?>
-            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+            <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         <?php if (!empty($success)): ?>
-            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+            <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
-
-        <!-- Profile picture -->
-        <div class="profile-pic-wrap">
-            <?php if (!empty($user['profile_picture'])): ?>
-                <img src="<?= htmlspecialchars($user['profile_picture']) ?>"
-                     alt="Profile" class="profile-pic">
-            <?php else: ?>
-                <div class="profile-pic-placeholder">&#128100;</div>
-            <?php endif; ?>
-
-            <form method="POST" action="index.php?page=profile"
-                  enctype="multipart/form-data" class="form" style="margin-top:10px">
-                <input type="hidden" name="action" value="upload_picture">
-                <div class="field-row">
-                    <input type="file" name="profile_picture" accept="image/*">
-                    <button type="submit" class="btn btn-sm">Upload</button>
-                </div>
-            </form>
+        
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <?php if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])): ?>
+                    <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" id="avatarImg">
+                <?php else: ?>
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                <?php endif; ?>
+                <form method="POST" enctype="multipart/form-data" class="avatar-upload">
+                    <input type="hidden" name="action" value="upload_picture">
+                    <label class="upload-label">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" name="profile_picture" accept="image/*" hidden onchange="this.form.submit()">
+                    </label>
+                </form>
+            </div>
+            
+            <div class="profile-form">
+                <h3>Personal Information</h3>
+                <form method="POST">
+                    <input type="hidden" name="action" value="update_info">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Shipping Address</label>
+                        <textarea name="address" rows="3" required><?php echo htmlspecialchars($user['address']); ?></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                </form>
+                
+                <hr>
+                
+                <h3>Change Password</h3>
+                <form method="POST">
+                    <input type="hidden" name="action" value="change_password">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" name="current_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" name="new_password" placeholder="Min 8 characters" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Change Password</button>
+                </form>
+            </div>
         </div>
-
-        <!-- Update info -->
-        <div class="card">
-            <h3>Personal Information</h3>
-            <form method="POST" action="index.php?page=profile"
-                  class="form" id="profile-form" novalidate>
-                <input type="hidden" name="action" value="update_info">
-
-                <div class="field-row">
-                    <div class="field">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name"
-                               value="<?= htmlspecialchars($user['name']) ?>" required>
-                        <span class="js-error" id="err-name"></span>
-                    </div>
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email"
-                               value="<?= htmlspecialchars($user['email']) ?>" required>
-                        <span class="js-error" id="err-email"></span>
-                    </div>
-                </div>
-
-                <div class="field-row">
-                    <div class="field">
-                        <label for="phone">Phone</label>
-                        <input type="text" id="phone" name="phone"
-                               value="<?= htmlspecialchars($user['phone']) ?>" required>
-                        <span class="js-error" id="err-phone"></span>
-                    </div>
-                    <div class="field">
-                        <label for="address">Address</label>
-                        <input type="text" id="address" name="address"
-                               value="<?= htmlspecialchars($user['address']) ?>" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </form>
-        </div>
-
-        <!-- Change password -->
-        <div class="card" style="margin-top:20px">
-            <h3>Change Password</h3>
-            <form method="POST" action="index.php?page=profile"
-                  class="form" id="password-form" novalidate>
-                <input type="hidden" name="action" value="change_password">
-
-                <div class="field">
-                    <label for="current_password">Current Password</label>
-                    <input type="password" id="current_password"
-                           name="current_password" placeholder="Enter current password">
-                </div>
-                <div class="field-row">
-                    <div class="field">
-                        <label for="new_password">New Password</label>
-                        <input type="password" id="new_password"
-                               name="new_password" placeholder="Min 8 characters">
-                        <span class="js-error" id="err-newpass"></span>
-                    </div>
-                    <div class="field">
-                        <label for="confirm_password">Confirm New</label>
-                        <input type="password" id="confirm_password"
-                               name="confirm_password" placeholder="Repeat new password">
-                        <span class="js-error" id="err-confirm"></span>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Change Password</button>
-            </form>
-        </div>
-
     </div>
 </div>
 
