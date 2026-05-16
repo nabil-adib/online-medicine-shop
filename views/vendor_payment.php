@@ -139,7 +139,28 @@ Confirm Order
 
 </form>
 
+<script>
 
+document
+.getElementById('payment-form')
+.addEventListener('submit', function(e){
+
+    let payment_method =
+        document.querySelector(
+            'input[name="payment_method"]:checked'
+        );
+
+    if(!payment_method){
+
+        e.preventDefault();
+
+        alert('Select payment method');
+
+    }
+
+});
+
+</script>
 
 </body>
 </html>
