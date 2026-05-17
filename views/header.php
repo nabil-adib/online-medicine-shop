@@ -16,13 +16,37 @@
             <span>PharmaQuick</span>
         </div>
         <div class="nav-links">
-            <a href="index.php?page=home"><i class="fas fa-home"></i> Home</a>
-            <a href="#"><i class="fas fa-shopping-cart"></i> Cart</a>
-            <a href="#"><i class="fas fa-box"></i> Orders</a>
-            <?php if (isset($_SESSION['logged_in'])): ?>
+            <?php if (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'admin'): ?>
+                <!-- ADMIN NAVIGATION -->
+                <a href="index.php?page=admin&action=dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="index.php?page=admin&action=categories"><i class="fas fa-tags"></i> Categories</a>
+                <a href="index.php?page=admin&action=medicines"><i class="fas fa-pills"></i> Medicines</a>
+                <a href="index.php?page=admin&action=customers"><i class="fas fa-users"></i> Customers</a>
+                <a href="index.php?page=admin&action=orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a href="index.php?page=admin&action=history"><i class="fas fa-history"></i> History</a>
                 <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
                 <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                
+            <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'vendor'): ?>
+                <!-- VENDOR NAVIGATION - Only existing vendor pages -->
+                <a href="index.php?page=vendor_home"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="index.php?page=vendor_cart"><i class="fas fa-cart-shopping"></i> Cart</a>
+                <a href="index.php?page=vendor_orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a href="index.php?page=vendor_invoice"><i class="fas fa-file-invoice"></i> Invoice</a>
+                <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
+                <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                
+            <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'customer'): ?>
+                <!-- CUSTOMER NAVIGATION -->
+                <a href="index.php?page=home"><i class="fas fa-home"></i> Home</a>
+                <a href="index.php?page=cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+                <a href="index.php?page=orders"><i class="fas fa-box"></i> Orders</a>
+                <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
+                <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                
             <?php else: ?>
+                <!-- GUEST NAVIGATION -->
+                <a href="index.php?page=home"><i class="fas fa-home"></i> Home</a>
                 <a href="index.php?page=login">Login</a>
                 <a href="index.php?page=register" class="register-btn">Register</a>
             <?php endif; ?>

@@ -37,3 +37,7 @@ function validatePhone(phone) {
 function validatePassword(password) {
     return password.length >= 8;
 }
+
+function validateName(name) {
+    return !/\d/.test(name);
+}

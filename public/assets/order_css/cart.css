@@ -1,0 +1,50 @@
+#cartTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#cartTable th, #cartTable td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: left;
+}
+
+#cartTable th {
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+}
+
+#cartTable tr:hover {
+    background: #eff6ff;
+}
+
+.qty-input {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.cart-total-container {
+    text-align: right;
+    margin-top: 25px;
+    font-size: 1.2em;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}

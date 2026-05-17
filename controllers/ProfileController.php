@@ -21,12 +21,14 @@ function profile_ctrl($conn) {
             if ($user_name === '' || $user_email === '' ||
                 $user_address === '' || $user_phone === '') {
                 $error = 'All fields are required.';
+            } elseif (!validate_name($user_name)) { 
+                $error = 'Name cannot contain numbers. Please use only letters and spaces.';
             } elseif (!filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Please enter a valid email address.';
             } elseif (!preg_match('/^\d{7,15}$/', $user_phone)) {
                 $error = 'Phone must be 7-15 digits.';
             } else {
-                $ok = update_user_info(
+                $result = update_user_info(
                     $conn,
                     $_SESSION['user_id'],
                     htmlspecialchars($user_name),
@@ -34,14 +36,16 @@ function profile_ctrl($conn) {
                     htmlspecialchars($user_address),
                     $user_phone
                 );
-                
-                if ($ok) {
+
+                if ($result === true || $result === 1) {
                     $_SESSION['user_name'] = htmlspecialchars($user_name);
                     $_SESSION['user_email'] = $user_email;
                     $_SESSION['user_address'] = htmlspecialchars($user_address);
                     $_SESSION['user_phone'] = $user_phone;
                     $success = 'Profile updated successfully.';
                     $user = get_user_by_id($conn, $_SESSION['user_id']);
+                } elseif ($result === 'email_exists' || $result === 2) {
+                    $error = 'Email address is already used by another account.';
                 } else {
                     $error = 'Update failed. Please try again.';
                 }
@@ -115,4 +119,5 @@ function profile_ctrl($conn) {
     
     require 'views/profile.php';
 }
+
 ?>
