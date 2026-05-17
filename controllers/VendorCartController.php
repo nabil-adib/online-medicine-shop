@@ -164,7 +164,7 @@ switch ($action) {
 
 
     
-    //FINAL ORDER + PAYMENT
+    //PAYMENT
     
     case 'payment':
 
@@ -187,10 +187,6 @@ switch ($action) {
         $total_amount = floatval(
             $_POST['total_amount'] ?? 0
         );
-
-        
-        //VALIDATION
-        
 
         if (empty($shipping_address)) {
 
@@ -215,10 +211,6 @@ switch ($action) {
             die("Invalid payment method");
         }
 
-        
-        //GET CART ITEMS
-        
-
         $cart_items = CartModel::getCartItems($user_id);
 
         if ($cart_items->num_rows <= 0) {
@@ -226,20 +218,12 @@ switch ($action) {
             die("Cart is empty");
         }
 
-        
-        //CREATE ORDER
-        
-
         $order_id = OrderModel::createOrder(
             $user_id,
             $total_amount,
             $shipping_address,
             $payment_method
         );
-
-        
-        //CREATE ORDER ITEMS
-        
 
         while ($item = $cart_items->fetch_assoc()) {
 
@@ -251,35 +235,20 @@ switch ($action) {
             );
         }
 
-        
-        //CREATE PAYMENT
-        
-
         OrderModel::createPayment(
             $order_id,
             $total_amount,
             $payment_method
         );
 
- 
-        //CLEAR CART
-
-
         CartModel::clearCart($user_id);
 
-    
-        //REDIRECT SUCCESS PAGE
-        
 
         header("Location: ../views/vendor_orders.php");
 
         exit();
 
         break;
-
-
-    
-    //DEFAULT  CART PAGE
     
     default:
 
@@ -287,3 +256,4 @@ switch ($action) {
 
         break;
 }
+?>
