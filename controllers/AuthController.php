@@ -27,6 +27,8 @@ function register_ctrl($conn) {
         if ($user_name === '' || $user_email === '' || $user_password === '' ||
             $user_address === '' || $user_phone === '') {
             $error = 'All fields are required.';
+        } elseif (!validate_name($user_name)) {
+            $error = 'Name cannot contain numbers. Please use only letters and spaces.';
         } elseif (!filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Please enter a valid email address.';
         } elseif (strlen($user_password) < 8) {
@@ -50,9 +52,9 @@ function register_ctrl($conn) {
             );
             
             if ($ok) {
-                $success = 'Account created! You can now log in.';
-                $old_name = $old_email = $old_address = $old_phone = '';
-                $old_role = 'customer';
+                $_SESSION['registration_success'] = "Account created successfully! Please login.";
+                header('Location: index.php?page=login');
+                exit;
             } else {
                 $error = 'Registration failed. Please try again.';
             }
@@ -85,7 +87,19 @@ function login_ctrl($conn) {
                 $_SESSION['user_address'] = $user['address'];
                 $_SESSION['profile_picture'] = $user['profile_picture'];
                 
-                header('Location: index.php?page=home');
+                // Role-based redirect using index.php routing
+                switch ($user['role']) {
+                    case 'admin':
+                        header('Location: index.php?page=admin&action=dashboard');
+                        break;
+                    case 'vendor':
+                        header('Location: index.php?page=vendor_home'); 
+                        break;
+                    case 'customer':
+                    default:
+                        header('Location: index.php?page=home');
+                        break;
+                }
                 exit;
             } else {
                 $error = 'Invalid email or password.';
@@ -101,5 +115,58 @@ function logout_ctrl($conn) {
     session_destroy();
     header('Location: index.php?page=login');
     exit;
+}
+function require_login()
+
+{
+
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+
+        header("Location: index.php?page=login");
+
+        exit();
+
+    }
+
+}
+
+
+
+function require_admin()
+
+{
+
+    require_login();
+
+
+
+    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+
+        header("Location: index.php?page=home");
+
+        exit();
+
+    }
+
+}
+
+
+
+function require_customer()
+
+{
+
+    require_login();
+
+
+
+    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'customer') {
+
+        header("Location: index.php?page=admin/dashboard");
+
+        exit();
+
+    }
+
 }
 ?>

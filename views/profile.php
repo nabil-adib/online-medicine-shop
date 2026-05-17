@@ -42,20 +42,20 @@ require 'views/header.php';
                     <div class="form-row">
                         <div class="form-group">
                             <label>Full Name</label>
-                            <input type="text" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                            <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
                         </div>
                         <div class="form-group">
                             <label>Phone Number</label>
-                            <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                            <input type="tel" name="phone" id="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                        <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                     </div>
                     <div class="form-group">
                         <label>Shipping Address</label>
-                        <textarea name="address" rows="3" required><?php echo htmlspecialchars($user['address']); ?></textarea>
+                        <textarea name="address" id="address" rows="3" required><?php echo htmlspecialchars($user['address']); ?></textarea>
                     </div>
                     <button type="submit" class="btn-primary">Update Profile</button>
                 </form>
@@ -67,15 +67,15 @@ require 'views/header.php';
                     <input type="hidden" name="action" value="change_password">
                     <div class="form-group">
                         <label>Current Password</label>
-                        <input type="password" name="current_password" required>
+                        <input type="password" name="current_password" id="current_password" required>
                     </div>
                     <div class="form-group">
                         <label>New Password</label>
-                        <input type="password" name="new_password" placeholder="Min 8 characters" required>
+                        <input type="password" name="new_password" id="new_password" placeholder="Min 8 characters" required>
                     </div>
                     <div class="form-group">
                         <label>Confirm New Password</label>
-                        <input type="password" name="confirm_password" required>
+                        <input type="password" name="confirm_password" id="confirm_password" required>
                     </div>
                     <button type="submit" class="btn-primary">Change Password</button>
                 </form>
@@ -83,5 +83,34 @@ require 'views/header.php';
         </div>
     </div>
 </div>
+<script>
+    // Profile form validation
+    document.getElementById('updateProfileForm')?.addEventListener('submit', function(e) {
+        const name = document.getElementById('name')?.value;
+        
+        if (name && !validateName(name)) {
+            e.preventDefault();
+            alert('Name cannot contain numbers. Please use only letters and spaces.');
+            return false;
+        }
+    });
 
+    // Password change form validation
+    document.getElementById('changePasswordForm')?.addEventListener('submit', function(e) {
+        const newPassword = document.getElementById('new_password')?.value;
+        const confirmPassword = document.getElementById('confirm_password')?.value;
+        
+        if (newPassword && !validatePassword(newPassword)) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters');
+            return false;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match');
+            return false;
+        }
+    });
+</script>
 <?php require 'views/footer.php'; ?>

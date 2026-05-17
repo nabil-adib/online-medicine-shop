@@ -10,10 +10,13 @@ if (!isset($_SESSION['logged_in'])) {
     exit;
 }
 
-$name = $_GET['name'] ?? '';
+// Get all filter parameters
+$search = $_GET['search'] ?? '';
 $vendor = $_GET['vendor'] ?? '';
 $genre = $_GET['genre'] ?? '';
+$type = $_GET['type'] ?? '';
 
-$medicines = search_medicines($conn, $name, $vendor, $genre);
+// Call the search function with all parameters
+$medicines = search_medicines($conn, $search, $vendor, $genre, $type);
 echo json_encode(['success' => true, 'medicines' => $medicines]);
 ?>

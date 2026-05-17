@@ -38,11 +38,26 @@ function create_user($conn, $user_name, $user_email, $password_hash, $user_addre
 }
 
 function update_user_info($conn, $user_id, $user_name, $user_email, $user_address, $user_phone) {
+    // Get current user's email
+    $current_email_query = mysqli_prepare($conn, "SELECT email FROM users WHERE id = ?");
+    mysqli_stmt_bind_param($current_email_query, 'i', $user_id);
+    mysqli_stmt_execute($current_email_query);
+    $result = mysqli_stmt_get_result($current_email_query);
+    $current_user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($current_email_query);
+    
+    // If email is being changed and new email already exists for another user
+    if ($current_user['email'] !== $user_email && email_exists($conn, $user_email)) {
+        return 'email_exists'; // Return string to indicate email conflict
+    }
+    
+    // Proceed with update
     $stmt = mysqli_prepare($conn, "UPDATE users SET name = ?, email = ?, address = ?, phone = ? WHERE id = ?");
     mysqli_stmt_bind_param($stmt, 'ssssi', $user_name, $user_email, $user_address, $user_phone, $user_id);
     $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
-    return $ok;
+    
+    return $ok ? true : false;
 }
 
 function update_user_password($conn, $user_id, $password_hash) {
@@ -59,5 +74,13 @@ function update_profile_picture($conn, $user_id, $profile_picture) {
     $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $ok;
+}
+
+function validate_name($name) {
+    // Check if name contains any numbers (0-9)
+    if (preg_match('/[0-9]/', $name)) {
+        return false;
+    }
+    return true;
 }
 ?>
