@@ -1,93 +1,91 @@
 <?php
+require 'header.php';
 
-session_start();
-
-require_once '../models/CartModel.php';
+if (!isset($_SESSION['logged_in']) || $_SESSION['user_role'] !== 'vendor') {
+    header('Location: index.php?page=login');
+    exit;
+}
 
 $user_id = $_SESSION['user_id'];
-
-$cart_items = CartModel::getCartItems($user_id);
-
-$total = 0;
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vendor Cart</title>
+<link rel="stylesheet" href="public/assets/vendor_cart.css">
 
-    <link rel="stylesheet"
-          href="../public/assets/style.css">
-</head>
+<div class="vendor-container">
+    <div class="page-header">
+        <h2><i class="fas fa-shopping-cart"></i> My Cart</h2>
+        <div style="display: flex; gap: 1rem;">
+            <div class="stat-box">
+                <div class="stat-value" id="itemCount">0</div>
+                <div class="stat-label">Items</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cart-content">
+        <div class="cart-items" id="cartItemsList">
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty</p>
+                <p style="font-size: 0.875rem;">Start adding medicines to your cart!</p>
+            </div>
+        </div>
+        
+        <div class="summary-box">
+            <div class="summary-title">Order Summary</div>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="summarySubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span>Free</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax</span>
+                <span id="summaryTax">$0.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="summaryTotal">$0.00</span>
+            </div>
+            
+            <button class="checkout-btn" id="checkoutBtn" onclick="proceedToCheckout()">
+                Proceed to Checkout
+            </button>
+            <a href="index.php?page=home" class="continue-shopping">Continue Shopping</a>
+        </div>
+    </div>
+</div>
 
-<body>
+<script>
+    function loadCart() {
+        updateCartUI();
+    }
+    
+    function updateCart(cartId) {
+        console.log('Update cart item:', cartId);
+    }
+    
+    function removeCart(cartId) {
+        console.log('Remove cart item:', cartId);
+        
+    }
+    
+    function proceedToCheckout() {
+        const total = document.getElementById('summaryTotal').textContent;
+        if (total === '$0.00') {
+            alert('Your cart is empty!');
+            return;
+        }
+        window.location.href = 'index.php?action=checkout';
+    }
+    
+    function updateCartUI() {
 
-<h2>Vendor Cart</h2>
+    }
+    
+    loadCart();
+</script>
 
-<table border="1" cellpadding="10">
-
-<tr>
-    <th>Medicine</th>
-    <th>Vendor</th>
-    <th>Price</th>
-    <th>Quantity</th>
-    <th>Subtotal</th>
-    <th>Action</th>
-</tr>
-
-<?php while($item = $cart_items->fetch_assoc()):
-
-$subtotal = $item['price'] * $item['quantity'];
-
-$total += $subtotal;
-?>
-
-<tr>
-
-<td><?= htmlspecialchars($item['name']) ?></td>
-
-<td><?= htmlspecialchars($item['vendor_name']) ?></td>
-
-<td><?= $item['price'] ?></td>
-
-<td>
-
-<input
-type="number"
-value="<?= $item['quantity'] ?>"
-min="1"
-class="quantity"
-data-id="<?= $item['cart_id'] ?>"
->
-
-</td>
-
-<td><?= $subtotal ?></td>
-
-<td>
-
-<button
-class="remove-btn"
-data-id="<?= $item['cart_id'] ?>"
->
-Remove
-</button>
-
-</td>
-
-</tr>
-
-<?php endwhile; ?>
-
-</table>
-
-<h3>Total: ৳<?= $total ?></h3>
-
-<a href="../controllers/VendorCartController.php?action=checkout">
-    Proceed Checkout
-</a>
-
-<script src="../public/js/vendor_cart.js"></script>
-
-</body>
-</html>
+<?php require 'footer.php'; ?>
