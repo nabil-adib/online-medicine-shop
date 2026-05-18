@@ -1,4 +1,5 @@
 <?php
+
 function cartApiCtrl($conn, $action) {
     header('Content-Type: application/json');
     
@@ -87,7 +88,7 @@ function checkoutCtrl($conn) {
                 }
                 
                 clear_cart($conn, $user_id);
-                header("Location: index.php?page=success&order_id=" . $order_id);
+                header("Location: index.php?page=cart&order_id=" . $order_id);
                 exit;
             } else {
                 $error = "Failed to place order. Please try again.";
@@ -95,5 +96,29 @@ function checkoutCtrl($conn) {
         }
     }
     require 'views/checkout.php';
+}
+
+function cart_ctrl($conn) {
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
+        header('Location: index.php?page=login');
+        exit;
+    }
+    require 'views/cart.php';
+}
+
+function customer_orders_ctrl($conn) {
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
+        header('Location: index.php?page=login');
+        exit;
+    }
+    
+    $user_id = $_SESSION['user_id'];
+    $orders = get_customer_orders($conn, $user_id);
+    
+    foreach ($orders as $index => $order) {
+        $orders[$index]['items'] = get_order_items($conn, $order['id']);
+    }
+    
+    require 'views/customer_orders.php';
 }
 ?>

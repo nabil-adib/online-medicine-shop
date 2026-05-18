@@ -1,0 +1,174 @@
+/* =============================================
+   HISTORY PAGE - MATCHING MAIN THEME
+============================================= */
+
+.container h2 {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.container > p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+/* Dashboard cards for summary */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-cards .card {
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.dashboard-cards .card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.dashboard-cards .card h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-cards .card p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+hr {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Order boxes */
+.order-box {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.order-header h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.order-date {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Customer info section */
+.customer-info {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.customer-info h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+}
+
+.customer-info p {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+}
+
+.customer-info strong {
+    color: #1f2937;
+}
+
+/* Order table */
+.order-box h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 1rem 0 0.75rem 0;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.order-table th {
+    background: #f8fafc;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.order-table td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-row {
+    background: #f9fafb;
+}
+
+.total-row td {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+}
+
+.order-separator {
+    margin: 2rem 0;
+    border-top: 2px dashed #e5e7eb;
+}
+
+/* No orders message */
+.container > p:first-of-type {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+}

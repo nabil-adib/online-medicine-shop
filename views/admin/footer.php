@@ -1,9 +1,7 @@
-</div> <!-- container end -->
-
-<footer style="text-align:center; padding:15px; margin-top:30px; color:#666;">
-    <hr>
-    <p>&copy; <?= date('Y'); ?> Medicine Shop</p>
+<footer class="admin-footer">
+    <p>&copy; <?= date('Y') ?> PharmaQuick. All rights reserved.</p>
 </footer>
 
+<script src="public/js/ajax.js"></script>
 </body>
 </html>

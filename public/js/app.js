@@ -1,4 +1,4 @@
-function addToCart(medicineId, quantity) {
+function addToCart(medicineId, quantity = 1) {
     const formData = new URLSearchParams();
     formData.append('medicine_id', medicineId);
     formData.append('quantity', quantity);
@@ -11,19 +11,36 @@ function addToCart(medicineId, quantity) {
     .then(data => {
         if (data.success) {
             alert(data.message);
+            location.reload(); // Reload to show updated cart
         } else {
             alert("Error: " + data.message);
         }
-    });
+    })
+    .catch(err => console.error('Error:', err));
 }
 
-function updateCart(cartId) {
+function updateCartQuantity(cartId, action) {
     const inputEl = document.getElementById('qty_' + cartId);
-    if (!inputEl) { console.error('qty input not found for cartId:', cartId); return; }
-
-    const newQty = parseInt(inputEl.value);
-    console.log('[updateCart] cartId:', cartId, '| newQty:', newQty);
-
+    if (!inputEl) return;
+    
+    let newQty = parseInt(inputEl.value);
+    if (action === 'incr') {
+        const max = parseInt(inputEl.getAttribute('max'));
+        if (newQty < max) newQty++;
+        else {
+            alert('Cannot exceed available stock!');
+            return;
+        }
+    } else if (action === 'decr') {
+        if (newQty > 1) newQty--;
+        else {
+            removeCartItem(cartId);
+            return;
+        }
+    }
+    
+    inputEl.value = newQty;
+    
     const formData = new URLSearchParams();
     formData.append('cart_id', cartId);
     formData.append('quantity', newQty);
@@ -34,33 +51,25 @@ function updateCart(cartId) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('[updateCart] server response:', data);
-
         if (data.success) {
-            const priceEl    = document.getElementById('price_' + cartId);
+            const priceEl = document.getElementById('price_' + cartId);
             const subtotalEl = document.getElementById('subtotal_' + cartId);
-
-            console.log('[updateCart] priceEl:', priceEl, '| subtotalEl:', subtotalEl);
-
+            
             if (priceEl && subtotalEl) {
-                const unitPrice   = parseFloat(priceEl.getAttribute('data-unit-price'));
+                const unitPrice = parseFloat(priceEl.getAttribute('data-unit-price'));
                 const newSubtotal = unitPrice * newQty;
-                console.log('[updateCart] unitPrice:', unitPrice, '| newSubtotal:', newSubtotal);
-                subtotalEl.innerText = '$' + newSubtotal.toFixed(2);
-            } else {
-                console.error('[updateCart] Could not find price or subtotal element for cartId:', cartId);
+                subtotalEl.innerText = '৳' + newSubtotal.toFixed(2);
             }
-
             recalculateCartSummary();
         } else {
             alert("Error: " + data.message);
         }
     })
-    .catch(err => console.error('[updateCart] fetch error:', err));
+    .catch(err => console.error('Error:', err));
 }
 
-function removeCart(cartId) {
-    if (!confirm("Remove this item?")) return;
+function removeCartItem(cartId) {
+    if (!confirm("Remove this item from cart?")) return;
 
     const formData = new URLSearchParams();
     formData.append('cart_id', cartId);
@@ -71,17 +80,30 @@ function removeCart(cartId) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('[removeCart] server response:', data);
-
         if (data.success) {
-            const card = document.getElementById('card_' + cartId);
-            if (card) card.remove();
+            const row = document.getElementById('card_' + cartId);
+            if (row) row.remove();
             recalculateCartSummary();
+            
+            // Check if table is empty
+            const tbody = document.getElementById('cartItemsList');
+            if (tbody && tbody.children.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: #9ca3af;">
+                            <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                            Your basket is empty.
+                            <br>
+                            <a href="index.php?page=home" style="display: inline-block; margin-top: 1rem; color: #2563eb;">Start Shopping →</a>
+                        </td>
+                    </tr>
+                `;
+            }
         } else {
             alert("Error: " + data.message);
         }
     })
-    .catch(err => console.error('[removeCart] fetch error:', err));
+    .catch(err => console.error('Error:', err));
 }
 
 function recalculateCartSummary() {
@@ -89,44 +111,25 @@ function recalculateCartSummary() {
     let dynamicSubtotal = 0;
 
     itemSubtotals.forEach(el => {
-        const raw    = el.innerText.replace('$', '').trim();
+        const raw = el.innerText.replace('৳', '').trim();
         const parsed = parseFloat(raw);
-        console.log('[recalculate] item subtotal raw:', raw, '| parsed:', parsed);
         if (!isNaN(parsed)) dynamicSubtotal += parsed;
     });
 
-    console.log('[recalculate] dynamicSubtotal:', dynamicSubtotal);
-
     const summarySubtotalEl = document.getElementById('summarySubtotal');
-    const summaryTotalEl    = document.getElementById('summaryTotal');
-    const containerList     = document.getElementById('cartItemsList');
-    const checkoutWrapper   = document.getElementById('checkoutBtnWrapper');
+    const summaryTotalEl = document.getElementById('summaryTotal');
+    const checkoutWrapper = document.getElementById('checkoutBtnWrapper');
 
-    console.log('[recalculate] summarySubtotalEl:', summarySubtotalEl, '| summaryTotalEl:', summaryTotalEl);
-
-    if (!summarySubtotalEl || !summaryTotalEl) {
-        console.error('[recalculate] Summary elements not found in DOM!');
-        return;
-    }
+    if (!summarySubtotalEl || !summaryTotalEl) return;
 
     if (dynamicSubtotal === 0) {
-        if (containerList) {
-            containerList.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-sm border flex items-center justify-center h-48 text-gray-400 italic">
-                    Your basket is empty. Start shopping!
-                </div>
-            `;
-        }
-
-        summarySubtotalEl.innerText = '$0.00';
-        summaryTotalEl.innerText    = '$0.00';
-
+        summarySubtotalEl.innerText = '৳0.00';
+        summaryTotalEl.innerText = '৳0.00';
         if (checkoutWrapper) {
-            checkoutWrapper.innerHTML = `<button disabled class="w-full bg-gray-200 text-gray-400 py-3 rounded-xl font-bold text-sm cursor-not-allowed">Proceed to Checkout</button>`;
+            checkoutWrapper.innerHTML = `<button disabled style="background: #d1d5db; color: #6b7280; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: not-allowed; width: 100%;">Proceed to Checkout</button>`;
         }
     } else {
-        summarySubtotalEl.innerText = '$' + dynamicSubtotal.toFixed(2);
-        summaryTotalEl.innerText    = '$' + (dynamicSubtotal + 2.00).toFixed(2);
-        console.log('[recalculate] Updated → subtotal:', dynamicSubtotal.toFixed(2), '| total:', (dynamicSubtotal + 2.00).toFixed(2));
+        summarySubtotalEl.innerText = '৳' + dynamicSubtotal.toFixed(2);
+        summaryTotalEl.innerText = '৳' + dynamicSubtotal.toFixed(2);
     }
 }
