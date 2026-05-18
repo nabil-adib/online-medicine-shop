@@ -1,6 +1,4 @@
 <?php
-// Admin DB functions
-
 function auth_admin($conn, $username, $password) {
     $stmt = mysqli_prepare($conn, "SELECT id, username, password FROM admins WHERE username = ?");
     mysqli_stmt_bind_param($stmt, 's', $username);

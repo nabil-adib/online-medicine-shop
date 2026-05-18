@@ -6,15 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - PharmaQuick</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php if (isset($pageCSS)) : ?>
     <link rel="stylesheet" href="public/assets/admin/<?= $pageCSS ?>">
     <?php endif; ?>
     <style>
-    /* =============================================
-       ADMIN NAVBAR & FOOTER ONLY (MATCHING MAIN THEME)
-    ============================================= */
     * {
         margin: 0;
         padding: 0;
@@ -28,9 +23,7 @@
         line-height: 1.6;
     }
 
-    /* =============================================
-    ADMIN NAVBAR & FOOTER
-    ============================================= */
+    /* ADMIN NAVBAR & FOOTER*/
 
     .navbar {
         background: white;
@@ -59,12 +52,10 @@
         cursor: pointer;
     }
 
-    .logo i {
-        font-size: 1.5rem;
-        color: #2563eb;
-        background: #dbeafe;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
+    .logo-img {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
     }
 
     .logo span {
@@ -72,7 +63,6 @@
         font-weight: 700;
         color: #1e40af;
     }
-
     .nav-links {
         display: flex;
         align-items: center;
@@ -102,7 +92,6 @@
         color: #b91c1c !important;
     }
 
-
     /* FOOTER */
     .admin-footer {
         text-align: center;
@@ -120,18 +109,19 @@
 <nav class="navbar">
     <div class="nav-container">
         <div class="logo">
-            <i class="fas fa-hand-holding-medical"></i>
+            <img src="public/assets/pictures/logo.png" alt="PharmaQuick Logo" class="logo-img">
             <span>PharmaQuick</span>
         </div>
         <div class="nav-links">
-            <a href="index.php?page=admin&action=dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-            <a href="index.php?page=admin&action=categories"><i class="fas fa-tags"></i> Categories</a>
-            <a href="index.php?page=admin&action=medicines"><i class="fas fa-pills"></i> Medicines</a>
-            <a href="index.php?page=admin&action=customers"><i class="fas fa-users"></i> Customers</a>
-            <a href="index.php?page=admin&action=orders"><i class="fas fa-shopping-cart"></i> Orders</a>
-            <a href="index.php?page=admin&action=history"><i class="fas fa-history"></i> History</a>
-            <a href="index.php?page=profile"><i class="fas fa-user"></i>Profile</a>
-            <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="index.php?page=admin&action=dashboard">Dashboard</a>
+            <a href="index.php?page=admin&action=categories"> Categories</a>
+            <a href="index.php?page=admin&action=medicines">Medicines</a>
+            <a href="index.php?page=admin&action=customers">Customers</a>
+            <a href="index.php?page=admin&action=vendors">Vendors</a>
+            <a href="index.php?page=admin&action=orders">Orders</a>
+            <a href="index.php?page=admin&action=history">History</a>
+            <a href="index.php?page=profile">Profile</a>
+            <a href="index.php?page=logout" class="logout-btn">Logout</a>
         </div>
     </div>
 </nav>

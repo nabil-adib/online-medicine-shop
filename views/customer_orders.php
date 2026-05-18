@@ -11,7 +11,6 @@ require 'views/header.php';
     
     <?php if (empty($orders)): ?>
         <div class="bg-white rounded-xl shadow-sm border p-12 text-center">
-            <i class="fas fa-box-open text-gray-300 text-5xl mb-4"></i>
             <p class="text-gray-500">You haven't placed any orders yet.</p>
             <a href="index.php?page=home" class="inline-block mt-4 text-blue-600 hover:underline">Start Shopping →</a>
         </div>

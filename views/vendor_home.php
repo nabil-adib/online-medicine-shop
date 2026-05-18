@@ -16,19 +16,16 @@ require 'views/header.php';
     <!-- Stats Cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
         <div style="background: white; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e7eb; text-align: center;">
-            <i class="fas fa-pills" style="font-size: 2rem; color: #2563eb; margin-bottom: 0.5rem;"></i>
             <h3 style="font-size: 1.875rem; font-weight: bold; margin: 0.5rem 0;"><?= count($medicines ?? []) ?></h3>
             <p style="color: #6b7280;">Your Medicines</p>
         </div>
         
         <div style="background: white; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e7eb; text-align: center;">
-            <i class="fas fa-tags" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 0.5rem;"></i>
             <h3 style="font-size: 1.875rem; font-weight: bold; margin: 0.5rem 0;"><?= count($categories ?? []) ?></h3>
             <p style="color: #6b7280;">Categories Available</p>
         </div>
         
         <div style="background: white; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e7eb; text-align: center;">
-            <i class="fas fa-shopping-cart" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
             <h3 style="font-size: 1.875rem; font-weight: bold; margin: 0.5rem 0;">0</h3>
             <p style="color: #6b7280;">Orders Received</p>
             <a href="index.php?page=vendor_orders" style="display: inline-block; margin-top: 1rem; color: #2563eb; text-decoration: none;">View Orders →</a>
@@ -63,7 +60,6 @@ require 'views/header.php';
             </div>
         <?php else: ?>
             <p style="text-align: center; padding: 3rem; color: #9ca3af;">
-                <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
                 No products found. Medicines are managed by admin.
             </p>
         <?php endif; ?>

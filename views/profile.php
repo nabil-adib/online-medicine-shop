@@ -6,7 +6,7 @@ require 'views/header.php';
 <div class="profile-container">
     <div class="profile-card">
         <div class="profile-header">
-            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+            <h2>My Profile</h2>
             <p>Manage your personal information and address</p>
         </div>
         
@@ -22,14 +22,11 @@ require 'views/header.php';
                 <?php if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])): ?>
                     <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" id="avatarImg">
                 <?php else: ?>
-                    <div class="avatar-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <div class="avatar-placeholder"></div>
                 <?php endif; ?>
                 <form method="POST" enctype="multipart/form-data" class="avatar-upload">
                     <input type="hidden" name="action" value="upload_picture">
-                    <label class="upload-label">
-                        <i class="fas fa-camera"></i>
+                    <label class="upload-label">Upload Photo
                         <input type="file" name="profile_picture" accept="image/*" hidden onchange="this.form.submit()">
                     </label>
                 </form>
@@ -37,7 +34,7 @@ require 'views/header.php';
             
             <div class="profile-form">
                 <h3>Personal Information</h3>
-                <form method="POST">
+                <form method="POST"  id="updateProfileForm">
                     <input type="hidden" name="action" value="update_info">
                     <div class="form-row">
                         <div class="form-group">
@@ -54,7 +51,7 @@ require 'views/header.php';
                         <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                     </div>
                     <div class="form-group">
-                        <label>Shipping Address</label>
+                        <label>Address</label>
                         <textarea name="address" id="address" rows="3" required><?php echo htmlspecialchars($user['address']); ?></textarea>
                     </div>
                     <button type="submit" class="btn-primary">Update Profile</button>
@@ -63,7 +60,7 @@ require 'views/header.php';
                 <hr>
                 
                 <h3>Change Password</h3>
-                <form method="POST">
+                <form method="POST" id="changePasswordForm">
                     <input type="hidden" name="action" value="change_password">
                     <div class="form-group">
                         <label>Current Password</label>
