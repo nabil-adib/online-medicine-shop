@@ -1,56 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Document metadata and configuration -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaQuick - Online Medicine Shop</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS and JavaScript files -->
     <link rel="stylesheet" href="public/assets/style.css">
+    <script src="public/js/ajax.js"></script>
 </head>
 <body>
+
+<!-- Navigation Bar Section -->
 <nav class="navbar">
     <div class="nav-container">
+        
+        <!-- Logo and Brand Name -->
         <div class="logo">
-            <i class="fas fa-hand-holding-medical"></i>
+            <img src="public/assets/pictures/logo.png" alt="PharmaQuick Logo" class="logo-img">
             <span>PharmaQuick</span>
         </div>
+        
+        <!-- Navigation Links Container -->
         <div class="nav-links">
+            
+            <!-- ADMIN NAVIGATION MENU -->
+            <!-- Displayed when user is logged in as admin -->
             <?php if (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'admin'): ?>
-                <!-- ADMIN NAVIGATION -->
-                <a href="index.php?page=admin&action=dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a href="index.php?page=admin&action=categories"><i class="fas fa-tags"></i> Categories</a>
-                <a href="index.php?page=admin&action=medicines"><i class="fas fa-pills"></i> Medicines</a>
-                <a href="index.php?page=admin&action=customers"><i class="fas fa-users"></i> Customers</a>
-                <a href="index.php?page=admin&action=orders"><i class="fas fa-shopping-cart"></i> Orders</a>
-                <a href="index.php?page=admin&action=history"><i class="fas fa-history"></i> History</a>
-                <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
-                <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="index.php?page=admin&action=dashboard">Dashboard</a>
+                <a href="index.php?page=admin&action=categories">Categories</a>
+                <a href="index.php?page=admin&action=medicines">Medicines</a>
+                <a href="index.php?page=admin&action=customers">Customers</a>
+                <a href="index.php?page=admin&action=orders">Orders</a>
+                <a href="index.php?page=admin&action=history">History</a>
+                <a href="index.php?page=profile">Profile</a>
+                <a href="index.php?page=logout" class="logout-btn">Logout</a>
                 
+            <!-- VENDOR NAVIGATION MENU -->
+            <!-- Displayed when user is logged in as vendor - Limited access -->
             <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'vendor'): ?>
-                <!-- VENDOR NAVIGATION - Only existing vendor pages -->
                 <a href="index.php?page=vendor_home"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="index.php?page=vendor_cart"><i class="fas fa-cart-shopping"></i> Cart</a>
-                <a href="index.php?page=vendor_orders"><i class="fas fa-shopping-cart"></i> Orders</a>
-                <a href="index.php?page=vendor_invoice"><i class="fas fa-file-invoice"></i> Invoice</a>
+                <a href="index.php?page=vendor_medicines"><i class="fas fa-pills"></i> Medicines</a>
                 <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
                 <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                                
+                                    
+            <!-- CUSTOMER NAVIGATION MENU -->
+            <!-- Displayed when user is logged in as regular customer -->
             <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['user_role'] === 'customer'): ?>
-                <!-- CUSTOMER NAVIGATION -->
-                <a href="index.php?page=home"><i class="fas fa-home"></i> Home</a>
-                <a href="index.php?page=cart"><i class="fas fa-shopping-cart"></i> Cart</a>
-                <a href="index.php?page=orders"><i class="fas fa-box"></i> Orders</a>
-                <a href="index.php?page=profile"><i class="fas fa-user"></i> Profile</a>
-                <a href="index.php?page=logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                
-            <?php else: ?>
-                <!-- GUEST NAVIGATION -->
-                <a href="index.php?page=home"><i class="fas fa-home"></i> Home</a>
-                <a href="index.php?page=login">Login</a>
-                <a href="index.php?page=register" class="register-btn">Register</a>
+                <a href="index.php?page=home">Home</a>
+                <a href="index.php?page=cart">Cart</a>
+                <a href="index.php?page=orders">Orders</a>
+                <a href="index.php?page=profile">Profile</a>
+                <a href="index.php?page=logout" class="logout-btn"> Logout</a>
             <?php endif; ?>
         </div>
     </div>
 </nav>
+
+<!-- Main Content Area - Page content will be inserted here -->
 <main class="main-content">

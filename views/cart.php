@@ -13,13 +13,13 @@ $order_total = 0;
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h2>Shopping Basket</h2>
         <a href="index.php?page=home" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fas fa-arrow-left"></i> Continue Shopping
+            Continue Shopping
         </a>
     </div>
     
     <?php if (isset($_GET['order_id'])): ?>
     <div class="alert alert-success" style="background: #d1fae5; color: #065f46; border: 1px solid #10b981; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; text-align: center;">
-        <i class="fas fa-check-circle" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+        
         <h3 style="font-weight: bold; margin: 0.5rem 0;">Order Confirmed!</h3>
         <p>Your order #ORD-<?= htmlspecialchars($_GET['order_id']) ?> has been placed successfully.</p>
         <a href="index.php?page=orders" style="display: inline-block; margin-top: 0.75rem; background: #059669; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none;">View My Orders</a>
@@ -43,7 +43,6 @@ $order_total = 0;
                     <?php if (empty($cart_items)): ?>
                         <tr>
                             <td colspan="6" style="text-align: center; padding: 3rem; color: #9ca3af;">
-                                <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
                                 Your basket is empty.
                                 <br>
                                 <a href="index.php?page=home" style="display: inline-block; margin-top: 1rem; color: #2563eb;">Start Shopping →</a>
@@ -70,9 +69,7 @@ $order_total = 0;
                             <td>৳<?= number_format($item['medicine_price'], 2) ?></td>
                             <td class="item-subtotal" id="subtotal_<?= $item['cart_id'] ?>">৳<?= number_format($subtotal, 2) ?></td>
                             <td>
-                                <button type="button" onclick="removeCartItem(<?= $item['cart_id'] ?>)" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button type="button" onclick="removeCartItem(<?= $item['cart_id'] ?>)" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem;"></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>

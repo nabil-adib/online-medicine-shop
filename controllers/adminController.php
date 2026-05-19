@@ -1,50 +1,39 @@
 <?php
 
+// Load all required model files for database operations
 require_once __DIR__ . '/../models/Admin.php';
 require_once __DIR__ . '/../models/Category.php';
 require_once __DIR__ . '/../models/Customer.php';
 require_once __DIR__ . '/../models/Medicine.php';
 require_once __DIR__ . '/../models/Order.php';
+require_once __DIR__ . '/../models/Vendor.php';
 
-
-// =========================
-// ADMIN MAIN CONTROLLER
-// =========================
-
+// Main admin controller function - handles all admin panel actions
 function admin_ctrl($conn)
 {
-    // admin protection
-     // admin protection
+    // Verify admin authentication - redirect if not logged in as admin
     if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
         header('Location: index.php?page=login');
         exit;
     }
 
-    // which admin page
+    // Determine which action to perform based on URL parameter
     $action = $_GET['action'] ?? 'dashboard';
 
+    // Route to appropriate handler based on action
     switch ($action) {
 
-
-        // =========================
-        // DASHBOARD
-        // =========================
+        // DASHBOARD - Display admin home with statistics
         case 'dashboard':
-
             $categoriesCount = get_total_categories($conn);
             $medicinesCount  = get_total_medicines($conn);
             $customersCount  = get_total_customers($conn);
-            $ordersCount     = count(get_all_orders($conn));
-
+            $ordersCount     = count(get_pending_orders($conn));
             $recentOrders = get_pending_orders($conn);
-
             require 'views/admin/dashboard.php';
             break;
 
-
-        // =========================
-        // CATEGORIES PAGE
-        // =========================
+        // CATEGORIES - Show all product categories
         case 'categories':
             $error = '';
             $categories = get_all_categories($conn);
@@ -52,15 +41,14 @@ function admin_ctrl($conn)
             require 'views/admin/categories.php';
             break;
 
-        // =========================
-        // ADD CATEGORY
-        // =========================
+        // ADD CATEGORY - Process new category creation
         case 'add_category':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = '';
                 $name = trim($_POST['name'] ?? '');
                 $type = trim($_POST['category_type'] ?? '');
                 
+                // Validate input fields
                 if ($name === '' || $type === '') {
                     $error = 'Please fill in both fields.';
                 } elseif (strlen($name) < 3) {
@@ -76,9 +64,7 @@ function admin_ctrl($conn)
             }
             break;
 
-        // =========================
-        // EDIT CATEGORY
-        // =========================
+        // EDIT CATEGORY - Load category data into edit form
         case 'edit_category':
             if (isset($_GET['id'])) {
                 $error = '';
@@ -89,9 +75,7 @@ function admin_ctrl($conn)
             }
             break;
 
-        // =========================
-        // UPDATE CATEGORY
-        // =========================
+        // UPDATE CATEGORY - Save modified category data
         case 'update_category':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = '';
@@ -115,32 +99,21 @@ function admin_ctrl($conn)
             }
             break;
 
-        // =========================
-        // DELETE CATEGORY
-        // =========================
+        // DELETE CATEGORY - Remove category only if no medicines depend on it
         case 'delete_category':
-
             if (isset($_GET['id'])) {
-
                 $id = $_GET['id'];
-
-                // block delete if medicines exist
+                // Prevent deletion if category contains medicines (foreign key constraint)
                 if (check_medicines_in_category($conn, $id)) {
-
                     header('Location: index.php?page=admin&action=categories&msg=blocked');
                     exit;
                 }
-
                 delete_category($conn, $id);
             }
-
             header('Location: index.php?page=admin&action=categories&msg=deleted');
             exit;
 
-
-        // =========================
-        // MEDICINES PAGE
-        // =========================
+        // MEDICINES - Display all medicines with category filter
         case 'medicines':
             $error = '';
             $medicines = get_all_medicines($conn);
@@ -149,9 +122,7 @@ function admin_ctrl($conn)
             require 'views/admin/medicines.php';
             break;
 
-        // =========================
-        // ADD MEDICINE
-        // =========================
+        // ADD MEDICINE - Process new medicine creation with optional image upload
         case 'add_medicine':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = '';
@@ -162,6 +133,7 @@ function admin_ctrl($conn)
                 $category_id = $_POST['category_id'] ?? '';
                 $description = trim($_POST['description'] ?? '');
                 
+                // Validate required fields and numeric values
                 if ($name === '' || $vendor_name === '' || $price === '' || $availability === '' || $category_id === '') {
                     $error = 'Please fill in all required fields.';
                 } elseif ($price <= 0) {
@@ -169,7 +141,7 @@ function admin_ctrl($conn)
                 } elseif ($availability <= 0) {
                     $error = 'Availability must be greater than 0.';
                 } else {
-                    // Image upload (optional)
+                    // Handle optional image upload with timestamp to avoid filename conflicts
                     $imagePath = '';
                     if (!empty($_FILES['image_path']['name'])) {
                         $imagePath = 'public/uploads/' . time() . '_' . $_FILES['image_path']['name'];
@@ -197,9 +169,7 @@ function admin_ctrl($conn)
             }
             break;
 
-        // =========================
-        // EDIT MEDICINE
-        // =========================
+        // EDIT MEDICINE - Load medicine data into edit form
         case 'edit_medicine':
             if (isset($_GET['id'])) {
                 $error = '';
@@ -211,9 +181,7 @@ function admin_ctrl($conn)
             }
             break;
 
-        // =========================
-        // UPDATE MEDICINE
-        // =========================
+        // UPDATE MEDICINE - Save modified medicine data
         case 'update_medicine':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = '';
@@ -232,6 +200,7 @@ function admin_ctrl($conn)
                 } elseif ($availability <= 0) {
                     $error = 'Availability must be greater than 0.';
                 } else {
+                    // Preserve old image or upload new one
                     $imagePath = $_POST['old_image'] ?? '';
                     if (!empty($_FILES['image_path']['name'])) {
                         $imagePath = 'public/uploads/' . time() . '_' . $_FILES['image_path']['name'];
@@ -269,65 +238,52 @@ function admin_ctrl($conn)
             }
             break;
 
-
-        // =========================
-        // DELETE MEDICINE
-        // =========================
+        // DELETE MEDICINE - Remove medicine if not referenced in orders/carts
         case 'delete_medicine':
-
             if (isset($_GET['id'])) {
-
-                delete_medicine($conn, $_GET['id']);
+                $id = $_GET['id'];
+                // Check if medicine is used in any pending order or cart before deletion
+                if (can_delete_medicine($conn, $id)) {
+                    delete_medicine($conn, $id);
+                    header('Location: index.php?page=admin&action=medicines&msg=deleted');
+                } else {
+                    $error = "Cannot delete this medicine. It is in customer carts or pending orders.";
+                    $medicines = get_all_medicines($conn);
+                    $categories = get_all_categories($conn);
+                    $editing = null;
+                    require 'views/admin/medicines.php';
+                }
+                exit;
             }
+            break;
 
-            header('Location: index.php?page=admin&action=medicines&msg=deleted');
-            exit;
-
-        // =========================
-        // CUSTOMERS
-        // =========================
+        // CUSTOMERS - Display all registered customers
         case 'customers':
-
             $customers = get_all_customers($conn);
-
             require 'views/admin/customers.php';
             break;
 
-
-        // =========================
-        // DELETE CUSTOMER
-        // =========================
+        // DELETE CUSTOMER - Remove customer and all related data (cascading)
         case 'delete_customer':
-
             if (isset($_GET['id'])) {
-
                 $id = $_GET['id'];
-
-                // delete_customer() already handles all related data
                 delete_customer($conn, $id);
             }
-
             header('Location: index.php?page=admin&action=customers&msg=deleted');
             exit;
 
-
-        // =========================
-        // ORDERS (ALL PURCHASE REQUESTS)
-        // =========================
+        // ORDERS - Display all purchase requests (pending, accepted, rejected)
         case 'orders':
             $orders = get_all_orders($conn);
             require 'views/admin/orders.php';
             break;
 
-        // =========================
-        // UPDATE ORDER STATUS (AJAX) - FIXED
-        // =========================
+        // UPDATE ORDER STATUS - AJAX endpoint for approving/rejecting orders
         case 'update_order_status':
             header('Content-Type: application/json');
-            
             $order_id = $_GET['order_id'] ?? 0;
             $status = $_GET['status'] ?? '';
-            
+            // Only allow valid status values
             if ($order_id && in_array($status, ['accepted', 'rejected'])) {
                 $result = update_order_status($conn, $order_id, $status);
                 echo json_encode(['success' => $result]);
@@ -337,28 +293,162 @@ function admin_ctrl($conn)
             exit;
             break;
 
-            
-        // =========================
-        // PURCHASE HISTORY (COMPLETED ORDERS WITH DETAILS)
-        // =========================
+        // HISTORY - Display completed orders with full details
         case 'history':
-
-            // Get all completed orders (accepted) with full details
             $orders = get_completed_orders_with_details($conn);
-
             require 'views/admin/history.php';
             break;
+        
+        // VENDORS - Display all suppliers
+        case 'vendors':
+            $vendors = get_all_vendors($conn);
+            if ($vendors === null) {
+                $vendors = [];
+            }
+            $error = '';
+            $success = '';
+            require 'views/admin/vendors.php';
+            break;
 
-        // =========================
-        // DEFAULT
-        // =========================
+        // ADD VENDOR - Process new vendor registration
+        case 'add_vendor':
+            require_once __DIR__ . '/../models/Vendor.php';
+            $error = '';
+            $old_name = '';
+            $old_email = '';
+            $old_address = '';
+            $old_phone = '';
+            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $name = trim($_POST['name'] ?? '');
+                $email = trim($_POST['email'] ?? '');
+                $password = $_POST['password'] ?? '';
+                $confirm_password = $_POST['confirm_password'] ?? '';
+                $address = trim($_POST['address'] ?? '');
+                $phone = trim($_POST['phone'] ?? '');
+                
+                $old_name = $name;
+                $old_email = $email;
+                $old_address = $address;
+                $old_phone = $phone;
+                
+                // Comprehensive validation
+                if ($name === '' || $email === '' || $password === '' || $address === '' || $phone === '') {
+                    $error = 'All fields are required.';
+                } elseif (!validate_name($name)) {
+                    $error = 'Name cannot contain numbers. Please use only letters and spaces.';
+                } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $error = 'Please enter a valid email address.';
+                } elseif (strlen($password) < 8) {
+                    $error = 'Password must be at least 8 characters.';
+                } elseif ($password !== $confirm_password) {
+                    $error = 'Passwords do not match.';
+                } elseif (!preg_match('/^\d{7,15}$/', $phone)) {
+                    $error = 'Phone must be 7-15 digits.';
+                } elseif (email_exists($conn, $email)) { 
+                    $error = 'This email is already registered. Please use a different email address.';
+                } else {
+                    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                    $ok = add_vendor($conn, htmlspecialchars($name), $email, $password_hash, htmlspecialchars($address), $phone);
+                    
+                    if ($ok) {
+                        header('Location: index.php?page=admin&action=vendors&msg=added');
+                        exit;
+                    } else {
+                        $error = 'Failed to add vendor. Please try again.';
+                    }
+                }
+            }
+            
+            $vendors = get_all_vendors($conn);
+            require 'views/admin/vendors.php';
+            break;
+
+        // EDIT VENDOR - Load vendor data into edit form
+        case 'edit_vendor':            
+            if (isset($_GET['id'])) {
+                $error = '';
+                $id = $_GET['id'];
+                $editing = get_vendor_by_id($conn, $id);
+                
+                if (!$editing) {
+                    header('Location: index.php?page=admin&action=vendors&msg=notfound');
+                    exit;
+                }
+                $vendors = get_all_vendors($conn);
+                    if ($vendors === null) {
+                        $vendors = [];
+                }
+
+                require 'views/admin/vendors.php';
+            }
+            break;
+        
+            // UPDATE VENDOR - Save modified vendor information
+        case 'update_vendor':            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $error = '';
+                $id = $_GET['id'];
+                $name = trim($_POST['name'] ?? '');
+                $email = trim($_POST['email'] ?? '');
+                $address = trim($_POST['address'] ?? '');
+                $phone = trim($_POST['phone'] ?? '');
+                
+                // Get the current vendor data
+                $current_vendor = get_vendor_by_id($conn, $id);
+                
+                if ($name === '' || $email === '' || $address === '' || $phone === '') {
+                    $error = 'All fields are required.';
+                } elseif (!validate_name($name)) {
+                    $error = 'Name cannot contain numbers. Please use only letters and spaces.';
+                } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $error = 'Please enter a valid email address.';
+                } elseif (!preg_match('/^\d{7,15}$/', $phone)) {
+                    $error = 'Phone must be 7-15 digits.';
+                } elseif ($email !== $current_vendor['email'] && email_exists($conn, $email)) { 
+                    // Only check if email has actually changed
+                    $error = 'This email is already registered. Please use a different email address.';
+                } else {
+                    $ok = update_vendor($conn, $id, htmlspecialchars($name), $email, htmlspecialchars($address), $phone);
+                    
+                    if ($ok) {
+                        header('Location: index.php?page=admin&action=vendors&msg=updated');
+                        exit;
+                    } else {
+                        $error = 'Failed to update vendor. Please try again.';
+                    }
+                }
+                
+                $editing = ['id' => $id, 'name' => $name, 'email' => $email, 'address' => $address, 'phone' => $phone];
+                $vendors = get_all_vendors($conn);
+                if ($vendors === null) {
+                    $vendors = [];
+                }
+                require 'views/admin/vendors.php';
+            }
+            break;
+
+        // DELETE VENDOR - Remove vendor from system
+        case 'delete_vendor':
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                $deleted = delete_vendor($conn, $id);
+                if ($deleted) {
+                    header('Location: index.php?page=admin&action=vendors&msg=deleted');
+                } else {
+                    // Vendor has associated medicines - cannot delete
+                    header('Location: index.php?page=admin&action=vendors&msg=blocked');
+                }
+                exit;
+            }
+            header('Location: index.php?page=admin&action=vendors');
+            exit;
+        
+        // DEFAULT - Redirect to dashboard if action not recognized
         default:
-
             header('Location: index.php?page=admin');
             exit;
     }
 }
-
-
 
 ?>

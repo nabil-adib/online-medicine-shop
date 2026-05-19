@@ -19,7 +19,7 @@ foreach ($cart_items as $item) {
         <div class="checkout-header">
             <h2>Complete Order</h2>
             <a href="index.php?page=cart" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Cart
+                Back to Cart
             </a>
         </div>
 
@@ -56,22 +56,18 @@ foreach ($cart_items as $item) {
                 <div class="payment-methods-grid">
                     <label class="payment-option-card">
                         <input type="radio" name="payment_method" value="Credit Card" required>
-                        <i class="fas fa-credit-card"></i>
                         <span>Credit Card</span>
                     </label>
                     <label class="payment-option-card">
                         <input type="radio" name="payment_method" value="bKash">
-                        <i class="fas fa-mobile-alt"></i>
                         <span>bKash</span>
                     </label>
                     <label class="payment-option-card">
                         <input type="radio" name="payment_method" value="Bank Transfer">
-                        <i class="fas fa-university"></i>
                         <span>Bank Transfer</span>
                     </label>
                     <label class="payment-option-card">
                         <input type="radio" name="payment_method" value="Cash on Delivery" checked>
-                        <i class="fas fa-truck"></i>
                         <span>Cash on Delivery</span>
                     </label>
                 </div>
@@ -108,7 +104,7 @@ foreach ($cart_items as $item) {
                     </div>
                     
                     <button type="submit" class="confirm-btn">
-                        <i class="fas fa-check-circle"></i> Confirm Purchase
+                       Confirm Purchase
                     </button>
                 </div>
             </div>
